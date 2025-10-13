@@ -1,8 +1,5 @@
 classdef tcav_gui_backend < handle
-    % This file is a template for the MATLAB GUI tutorial.
-    % Fill in the script to create an App that plots Process Variables
-    % from EPICS.
-    
+
     properties
         guihan
         PVtoPlot
@@ -347,6 +344,7 @@ classdef tcav_gui_backend < handle
                 
                 % colormap limits when live stream runs
                 if obj.newPlot
+                    obj.guihan.LogTextArea.Value = [obj.guihan.LogTextArea.Value; {char("[tcav_gui_backend.m] Selected camera PV: " + obj.cameraPV)}];
                     obj.newPlot = false;
                     
                     % set default colorap limits
