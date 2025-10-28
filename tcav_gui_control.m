@@ -8,6 +8,16 @@ classdef tcav_gui_control < handle
         pvlist PV
         pvs
     end
+    properties(Constant)
+        
+        phase_control_PV = "TCAV:LI20:2400:PDES"
+        ampli_control_PV = "TCAV:LI20:2400:ADES"
+        
+        phase_readback_PV = "TCAV:LI20:2400:P"
+        ampli_readback_PV = "TCAV:LI20:2400:A"
+
+        tolerance = 0.1;
+    end
     properties(Hidden)
         listeners
     end
@@ -17,15 +27,15 @@ classdef tcav_gui_control < handle
        % constructor, matlab & has to be launched from matlabTNG folder to
        % see PV class
        function obj = tcav_gui_control(apphandle)
+           
             % initialize object and add PVs to be monitored
             context = PV.Initialize(PVtype.EPICS) ;             
 
-
             obj.pvlist=[...
-                PV(context,'name',"AmplitudeDES",'pvname',"TCAV:LI20:2400:ADES",'monitor',true,'mode',"rw");
-                PV(context,'name',"AmplitudeRBV",'pvname',"TCAV:LI20:2400:A",'monitor',true,'mode',"r");
-                PV(context,'name',"PhaseDES",'pvname',"TCAV:LI20:2400:PDES",'monitor',true,'mode',"rw");
-                PV(context,'name',"PhaseRBV",'pvname',"TCAV:LI20:2400:P",'monitor',true,'mode',"r");
+                PV(context,'name', "phase_control",'pvname',  obj.phase_control_PV,'mode',"rw",'monitor',true);
+                PV(context,'name',"phase_readback",'pvname', obj.phase_readback_PV,'mode', "r",'monitor',true);
+                PV(context,'name', "ampli_control",'pvname',  obj.ampli_control_PV,'mode',"rw",'monitor',true);
+                PV(context,'name',"ampli_readback",'pvname', obj.ampli_readback_PV,'mode', "r",'monitor',true);
                 ] ;
             pset(obj.pvlist,'debug',0) ;
             obj.pvs = struct(obj.pvlist);
@@ -34,10 +44,10 @@ classdef tcav_gui_control < handle
             obj.guihan=apphandle;
            
             % Set GUI callbacks for PVs
-            obj.pvs.AmplitudeDES.guihan = apphandle.AmplitudeDESEditField;
-            obj.pvs.AmplitudeRBV.guihan = apphandle.AmplitudeRBVEditField;
-            obj.pvs.PhaseDES.guihan     = apphandle.PhaseDESEditField;
-            obj.pvs.PhaseRBV.guihan     = apphandle.PhaseRBVEditField;
+            obj.pvs.ampli_control.guihan  = apphandle.AmplitudeDESEditField;
+            obj.pvs.ampli_readback.guihan = apphandle.AmplitudeRBVEditField;
+            obj.pvs.phase_control.guihan  = apphandle.PhaseDESEditField;
+            obj.pvs.phase_readback.guihan = apphandle.PhaseRBVEditField;
         
             % Start listening for PV updates
             obj.listeners = addlistener(obj,'PVUpdated',@(~,~) obj.loop) ;

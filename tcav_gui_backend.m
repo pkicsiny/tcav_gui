@@ -41,7 +41,7 @@ classdef tcav_gui_backend < handle
 
     methods
         % This section contains functions that are needed to run the app
-        
+        %% constructor
         function obj = tcav_gui_backend(apphandle)
             % This is the constructor method. This function is run when
             % an instance of the class is created. Property values are
@@ -69,6 +69,7 @@ classdef tcav_gui_backend < handle
          
         end
         
+        %% utils
         function x = mmToPix(obj, x)
           um_per_pixel = obj.fileData.res;  % [um/pixel]
            x = x / um_per_pixel * 1e3;
@@ -254,6 +255,7 @@ classdef tcav_gui_backend < handle
             obj.guihan.UIAxes2.XTickLabel = arrayfun(@(x) sprintf('%.2f', x), c * obj.xticks_mm, 'UniformOutput', false);   
         end
         
+        %% main function
         function PVtimerFcnCam(obj, ~, event)
 
           %%%%%%%%%%%%%%%
@@ -303,7 +305,42 @@ classdef tcav_gui_backend < handle
                   
               % this is processed uses lcagrab inside it might be slower
               obj.fileData = profmon_grab(obj.cameraPV); % slow bc loads all attributes there is a faster way just loads the image
+              
+              % check if image is corrupted
+              if isempty(obj.fileData.img)
+                  msg = sprintf('Camera PV %s is not working.', obj.cameraPV);
+
+                  if obj.newPlot
+                      obj.guihan.LogTextArea.Value = [obj.guihan.LogTextArea.Value;...
+                      {char("[tcav_gui_backend.m] " + msg)}];
+                        obj.newPlot = false;
+                  end
                   
+                  cla(obj.guihan.UIAxes2);
+                  cla(obj.guihan.UIAxesTop);
+                  cla(obj.guihan.UIAxesRight);
+                  text(obj.guihan.UIAxes2, 0.5, 0.5, msg, ...
+                    'FontSize', 14, ...
+                    'Color', 'r', ...
+                    'FontWeight', 'bold', ...
+                    'HorizontalAlignment', 'center', ...
+                    'VerticalAlignment', 'middle');
+                  text(obj.guihan.UIAxesTop, 0.5, 0.5, msg, ...
+                    'FontSize', 14, ...
+                    'Color', 'r', ...
+                    'FontWeight', 'bold', ...
+                    'HorizontalAlignment', 'center', ...
+                    'VerticalAlignment', 'middle');
+                  text(obj.guihan.UIAxesRight, 0.5, 0.5, msg, ...
+                    'FontSize', 14, ...
+                    'Color', 'r', ...
+                    'FontWeight', 'bold', ...
+                    'HorizontalAlignment', 'center', ...
+                    'VerticalAlignment', 'middle');
+                  return
+                  
+              end
+              
               %%%%%%%%%%%%%%%%%
               % get raw image %
               %%%%%%%%%%%%%%%%%
@@ -344,7 +381,9 @@ classdef tcav_gui_backend < handle
                 
                 % colormap limits when live stream runs
                 if obj.newPlot
-                    obj.guihan.LogTextArea.Value = [obj.guihan.LogTextArea.Value; {char("[tcav_gui_backend.m] Selected camera PV: " + obj.cameraPV)}];
+                    obj.guihan.LogTextArea.Value = [obj.guihan.LogTextArea.Value;...
+                {sprintf('[tcav_gui_backend.m] Selected camera PV: %s', obj.cameraPV)}];
+            
                     obj.newPlot = false;
                     
                     % set default colorap limits
