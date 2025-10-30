@@ -9,8 +9,14 @@ classdef tcav_gui_tcav_1_control < handle
         pvs
     end
     properties
+        %tcav_status_PV   = "TCAV:LI20:2400:C_1_TCTL"
+        %phase_control_PV = "TCAV:LI20:2400:PDES"
+        %ampli_control_PV = "TCAV:LI20:2400:ADES"
         
-        tcav_status_PV   = "KLYS:LI10:51:C_1_TCTL"
+        %phase_readback_PV = "TCAV:LI20:2400:P"
+        %ampli_readback_PV = "TCAV:LI20:2400:A"
+        
+        tcav_status_PV   = "KLYS:LI10:51:TRIGMODE" %rval
         phase_control_PV = "KLYS:LI10:51:PDES"
         ampli_control_PV = "KLYS:LI10:51:ADES"
         
@@ -47,7 +53,6 @@ classdef tcav_gui_tcav_1_control < handle
             pset(obj.pvlist,'debug',0) ;
             obj.pvs = struct(obj.pvlist);
           
-           
             % Set GUI callbacks for PVs
             obj.pvs.tcav_status.guihan    = obj.guihan.TCAVStatusEditField_1;
             obj.pvs.ampli_control.guihan  = obj.guihan.AmplitudeDESEditField_1;
@@ -56,14 +61,14 @@ classdef tcav_gui_tcav_1_control < handle
             obj.pvs.phase_readback.guihan = obj.guihan.PhaseRBVEditField_1;
    
             % Start listening for PV updates
-            %obj.listeners = addlistener(obj,'PVUpdated_1',@(~,~) obj.loop) ;
-            %run(obj.pvlist, true, 0.1, obj, 'PVUpdated_1');  
+            obj.listeners = addlistener(obj,'PVUpdated_1',@(~,~) obj.loop) ;
+            run(obj.pvlist, true, 0.1, obj, 'PVUpdated_1');  
             
          
         end
         
         function loop(obj)
-            %obj.pvs.tcav_status.guihan.Value = obj.pvs.tcav_status.val{1};
+            obj.pvs.tcav_status.guihan.Value = obj.pvs.tcav_status.val{1};
             return 
         end
         

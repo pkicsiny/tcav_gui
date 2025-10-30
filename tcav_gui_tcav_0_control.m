@@ -62,7 +62,6 @@ classdef tcav_gui_tcav_0_control < handle
         end
         
         function loop(obj)
-            % use lamp
             obj.pvs.tcav_status.guihan.Value = obj.pvs.tcav_status.val{1};
             return 
         end
