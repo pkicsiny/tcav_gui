@@ -91,5 +91,7 @@ classdef tcav_gui_phase_calib < handle
             % bg subtraction fro, profmon
             % debug bunchlegth from daq
             % show steps in phase scan
+            % enabled/disabled status: TCAV:LI20:2400:C_1_TCTL
+            % run('/home/fphysics/pkicsiny/git_work/matlabTNG/F2_DAQ/F2_DAQ.mlapp')
     end
 end

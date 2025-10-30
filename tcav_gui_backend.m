@@ -603,8 +603,5 @@ classdef tcav_gui_backend < handle
                 imageData = 0;
             end
         end
-        
-        function closeApp(obj)
-        end
     end
 end

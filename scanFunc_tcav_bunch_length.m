@@ -12,10 +12,10 @@ classdef scanFunc_tcav_bunch_length < handle
     end
     properties(Constant)
         
-        phase_control_PV = "TCAV:LI20:2400:PDES"
+        control_PV = "TCAV:LI20:2400:PDES"
         ampli_control_PV = "TCAV:LI20:2400:ADES"
         
-        phase_readback_PV = "TCAV:LI20:2400:P"
+        readback_PV = "TCAV:LI20:2400:P"
         ampli_readback_PV = "TCAV:LI20:2400:A"
 
         tolerance = 0.1;
@@ -30,8 +30,8 @@ classdef scanFunc_tcav_bunch_length < handle
                     
             context = PV.Initialize(PVtype.EPICS);
             obj.pvlist=[...
-                PV(context,'name', "phase_control",'pvname',  obj.phase_control_PV,'mode',"rw",'monitor',true);
-                PV(context,'name',"phase_readback",'pvname', obj.phase_readback_PV,'mode', "r",'monitor',true);
+                PV(context,'name', "control",'pvname',  obj.control_PV,'mode',"rw",'monitor',true);
+                PV(context,'name',"readback",'pvname', obj.readback_PV,'mode', "r",'monitor',true);
                 PV(context,'name', "ampli_control",'pvname',  obj.ampli_control_PV,'mode',"rw",'monitor',true);
                 PV(context,'name',"ampli_readback",'pvname', obj.ampli_readback_PV,'mode', "r",'monitor',true);
                 ];
@@ -41,8 +41,8 @@ classdef scanFunc_tcav_bunch_length < handle
             % Associate class with GUI
             obj.guihan=apphandle;
             
-            obj.initial_phase_control  = caget(obj.pvs.phase_control);
-            obj.initial_phase_readback = caget(obj.pvs.phase_readback);
+            obj.initial_phase_control  = caget(obj.pvs.control);
+            obj.initial_phase_readback = caget(obj.pvs.readback);
             obj.initial_ampli_control  = caget(obj.pvs.ampli_control);
             obj.initial_ampli_readback = caget(obj.pvs.ampli_readback);            
         end
@@ -83,19 +83,19 @@ classdef scanFunc_tcav_bunch_length < handle
                     error("Invalid value encountered for variable 'value': " + value);
             end
             
-            caput(obj.pvs.phase_control, obj.set_phase);
+            caput(obj.pvs.control, obj.set_phase);
             caput(obj.pvs.ampli_control, obj.set_ampli);
                     
             obj.guihan.LogTextArea.Value = [obj.guihan.LogTextArea.Value;...
                  {sprintf('[tcav_gui_daq_calib.m] Set %s to %0.2f [deg] and %s to %0.2f [V]',...
-                 obj.pvs.phase_control, obj.set_phase, obj.pvs.ampli_control, obj.set_ampli)}];
+                 obj.pvs.control, obj.set_phase, obj.pvs.ampli_control, obj.set_ampli)}];
                     
             % read back set value, will not be the same as des
             phase_current_value = caget(obj.pvs.phase_readback);
             ampli_current_value = caget(obj.pvs.ampli_readback);
             
             % waits till readback value matches the value i asked for within tolerance
-            while abs(phase_current_value - obj.pvs.phase_control) > obj.tolerance
+            while abs(phase_current_value - obj.pvs.control) > obj.tolerance
                 phase_current_value = caget(obj.pvs.phase_readback);
                 pause(0.1);
             end 
@@ -104,7 +104,7 @@ classdef scanFunc_tcav_bunch_length < handle
                 pause(0.1);
             end 
             
-            phase_delta = phase_current_value - obj.pvs.phase_control;
+            phase_delta = phase_current_value - obj.pvs.control;
             ampli_delta = ampli_current_value - obj.pvs.ampli_control;
 
             obj.guihan.LogTextArea.Value = [obj.guihan.LogTextArea.Value;...
@@ -115,13 +115,13 @@ classdef scanFunc_tcav_bunch_length < handle
         end
         
         %% restore phase and ampli DES values to those before changing them 
-        function restoreInitValue(obj)
-            obj.guihan.LogTextArea.Value = [obj.guihan.LogTextArea.Value;...
-                {'Restoring initial valuesfor %s and %s',obj.pvs.phase_control.name, obj.pvs.ampli_control.name }];
-            obj.set_value(obj.initial_phase_control);
-            obj.set_value(obj.initial_ampli_control);
+        %function restoreInitValue(obj)
+        %    obj.guihan.LogTextArea.Value = [obj.guihan.LogTextArea.Value;...
+        %        {'Restoring initial valuesfor %s and %s',obj.pvs.control.name, obj.pvs.ampli_control.name }];
+        %    obj.set_value(obj.initial_phase_control);
+        %    obj.set_value(obj.initial_ampli_control);%
 
-        end
+        %end
         
     end
     
