@@ -1,7 +1,7 @@
 %% getDataSet(dataSetID)
 function [data_struct, header] = getDataSet(app, dataSetID, exp)
     dataSetID = sprintf('%05d', dataSetID);
-    
+    % load latest dataset
     %% Check if already looked up:
     storagePath = 'pathStorage.mat';
     fieldName = sprintf('%s%s', 'field', dataSetID);
@@ -61,8 +61,9 @@ function [data_struct, header] = getDataSet(app, dataSetID, exp)
     
     %% Find .mat file with DAQ settings
     %expr = 'E\d{3}_\d{5}$';
-    expr = '[a-zA-Z0-9]{4}_\d{5}$';
-    startIdx = regexp(path,expr);
+    %expr = '[a-zA-Z0-9]{4}_\d{5}$';
+    expr = '[a-zA-Z0-9]+_\d{5}$';
+    startIdx = regexp(path,expr); % assumes 4 character long name like TEST, fails with BEAMPHYS
     dsName = sprintf('%s%s',path(startIdx:end),'.mat');
     
     matfile = sprintf('%s/%s',path,dsName);

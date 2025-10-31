@@ -1,27 +1,31 @@
 function [cal, cal_scaled] = calibrate_phase_position(app, exp, run, PV_name, PV_range) 
 
-    if nargin == 1    
-        exp = 'TEST'
-        run = 13908%13729
-        PV_range = [-Inf Inf]
-        PV_name  = 'BSA_List_S10.BPMS_IN10_771_TMIT'
-    end
+    %if nargin == 1    
+    %    exp = 'TEST'
+    %    run = 13908%13729
+    %    PV_range = [-Inf Inf]
+    %    PV_name  = 'BSA_List_S10.BPMS_IN10_771_TMIT'
+    %end
     
-    cam = 'DTOTR2';
-    
-    PV_range = [-Inf Inf];
-    
-    app.LogTextArea.Value = [app.LogTextArea.Value; {char("[calibrate_phase_position.m] Launched calibration---------------------------------")}];
-
-    % load dataset which is created by DAQ and reference on elog
+    % automatically get latest run data file from elog
     % http://physics-elog.slac.stanford.edu/facetelog/index.jsp
+    if nargin == 1
+        [run, exp] = getLatestExp();
+    end
+    app.LogTextArea.Value = [app.LogTextArea.Value; {char("[calibrate_phase_position.m] Launched calibration with run: " + run + ", experiment: " + exp)}]; 
+
+    PV_range = [-Inf Inf];    
     [data_struct, header] = getDataSet(app, run, exp);
+    cam = data_struct.params.camNames{1};
     
-    % [mm/pixel], DTOTR2 hardcoded
-    R2 = data_struct.metadata.DTOTR2.RESOLUTION;
+    % TODO: here print list of PVs to choose what to filter on
+    PV_name  = 'BSA_List_S10.BPMS_IN10_771_TMIT'; % hardcoded for now
     
-    % get list of matched indices (MATCH) field in elog entry, DTOTR2 hardcoded
-    comIndImg = data_struct.images.DTOTR2.common_index;
+    % units: [mm/pixel]
+    R2 = eval(['data_struct.metadata.' cam '.RESOLUTION']);
+    
+    % get list of matched indices (MATCH) field in elog entry
+    comIndImg = eval(['data_struct.images.' cam '.common_index']);
     comIndScal = data_struct.scalars.common_index;
     N = length(comIndImg);
     
@@ -75,8 +79,8 @@ function [cal, cal_scaled] = calibrate_phase_position(app, exp, run, PV_name, PV
                 dxpos(end+1) = 0;
                 sigx(end+1) = 0;
                 
-                % RBV phase [deg] should be around desired phase, PV hardcoded
-                phase(end + 1) = data_struct.scalars.BSA_List_S10.BPMS_IN10_771_TMIT(valid_indices(i));
+                % RBV phase [deg] should be around desired phase
+                phase(end + 1) = eval(['data_struct.scalars.' PV_name '(valid_indices(i))']);
             catch
                 app.LogTextArea.Value = [app.LogTextArea.Value, ['i = ' num2str(i) ' didn''t work']];
             end
@@ -102,8 +106,8 @@ function [cal, cal_scaled] = calibrate_phase_position(app, exp, run, PV_name, PV
     fitresult  = fit_linear(app, phase(ifit), xpos(ifit), app.UIAxesPhaseCalib);
     p = fitresult.p;
     
-    xlabel(app.UIAxesPhaseCalib, 'TCAV:LI20:2400:P [deg]'); 
-    ylabel(app.UIAxesPhaseCalib, 'DTOTR2 x_0 [um]');
+    xlabel(app.UIAxesPhaseCalib, 'Readback phase [deg]'); 
+    ylabel(app.UIAxesPhaseCalib, [cam ' x_0 [\mum]']);
     
     % plot slope and its error on figure
     cal = abs(p(1)); % slope of fitted line [um/deg]

@@ -2,6 +2,7 @@ classdef tcav_gui_phase_calib < handle
     properties
         guihan
         daq_params
+        tcav_params % list, stores [status, pdes, ades, prb, arb] PVs
     end
     
     properties (SetObservable)
@@ -12,7 +13,7 @@ classdef tcav_gui_phase_calib < handle
             obj.guihan = apphandle; 
             
             % change this to latest
-            obj.daqPath = 'DAQ_params_BEAMPHYS_16-Oct-2025.mat'; % inside data struct scan func name is defined
+            obj.daqPath = 'TCAV_10.mat'; % inside data struct scan func name is defined
             data = load(obj.daqPath);
             obj.daq_params = data.daq_params;
             
@@ -21,9 +22,6 @@ classdef tcav_gui_phase_calib < handle
             
             % to access calibration functions
             addpath /home/fphysics/pkicsiny/git_work/matlabTNG/F2_TCAV/tools
-            
-            % set values from gui default
-            %obj.setScanParamsFromGui();
         end
         
         function setScanParamsFromGui(obj)
@@ -37,6 +35,11 @@ classdef tcav_gui_phase_calib < handle
             obj.daq_params.stepsAll = (1:obj.daq_params.nSteps)'; 
             
             obj.daq_params.comment = {'TEST XTCAV CALIBRATION'};
+            
+            % set which tcav to manipulate
+            obj.daq_params.scanPVs = obj.tcav_params(2); % PDES
+            obj.daq_params.RBV_PVs = obj.tcav_params(4); % P readback
+
         end
         
         function showScanSteps(obj)
@@ -63,10 +66,11 @@ classdef tcav_gui_phase_calib < handle
              % 13729 run, E300
              % experiment
              
-             obj.setScanParamsFromGui();
+             %obj.setScanParamsFromGui();
              
              % need to be on facet srv20 for this
              obj.guihan.LogTextArea.Value = [obj.guihan.LogTextArea.Value; {'[tcav_gui_daq_calib.m] Launching phase scan...'}];
+             % 
              F2_fastDAQ_HDF5(obj.daq_params);
         end
 

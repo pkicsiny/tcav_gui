@@ -90,14 +90,14 @@ classdef tcav_gui_backend < handle
                obj.fileData.img = flipud(obj.fileData.img); 
             end
             
-            if obj.fileData.isRot
+            if isfield(obj.fileData, 'isRot') && obj.fileData.isRot
                 obj.fileData.img = obj.fileData.img';
             end
         end
         
         function [x, y] = RelCoordRawToProc(obj, x, y)    
             
-            if obj.fileData.isRot
+            if isfield(obj.fileData, 'isRot') && obj.fileData.isRot
                x_temp = x;
                x = y;
                y = x_temp;
@@ -123,7 +123,7 @@ classdef tcav_gui_backend < handle
                x = - x; 
             end
             
-            if obj.fileData.isRot
+            if isfield(obj.fileData, 'isRot') && obj.fileData.isRot
                x_temp = x;
                x = y;
                y = x_temp;
@@ -138,7 +138,7 @@ classdef tcav_gui_backend < handle
                 offset_x = 0;
             end
     
-            if obj.fileData.isRot
+            if isfield(obj.fileData, 'isRot') && obj.fileData.isRot
                x_temp = x;
                x = y;
                y = x_temp;
@@ -164,7 +164,7 @@ classdef tcav_gui_backend < handle
                x = obj.fileData.nCol - x; 
             end
             
-            if obj.fileData.isRot
+            if isfield(obj.fileData, 'isRot') && obj.fileData.isRot
                x_temp = x;
                x = y;
                y = x_temp;

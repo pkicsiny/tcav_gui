@@ -16,12 +16,12 @@ classdef tcav_gui_tcav_1_control < handle
         %phase_readback_PV = "TCAV:LI20:2400:P"
         %ampli_readback_PV = "TCAV:LI20:2400:A"
         
-        tcav_status_PV   = "KLYS:LI10:51:TRIGMODE" %rval
+        tcav_status_PV   = "KLYS:LI10:51:TRIGMODE"
         phase_control_PV = "KLYS:LI10:51:PDES"
         ampli_control_PV = "KLYS:LI10:51:ADES"
         
-        phase_readback_PV = "KLYS:LI10:51:PACT05"
-        ampli_readback_PV = "KLYS:LI10:51:POWER_W0CH0"
+        phase_readback_PV = "KLYS:LI10:51:PHAS" % "KLYS:LI10:51:PACT05"
+        ampli_readback_PV = "KLYS:LI10:51:AMPL" % "KLYS:LI10:51:POWER_W0CH0"
         
         which_tcav uint8 = 0
 

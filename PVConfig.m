@@ -4,7 +4,7 @@ function dict = PVConfig()
 
             % Add key-value pairs
             dict('GAMMA1') = 'CAMR:LI20:302';
-            %dict('GAMMA2') = 'CMOS:LI20:3507';
+            dict('PR10711') = 'PROF:IN10:711';
             %dict('GAMMA4') = 'CAMR:LI20:303';
             %dict('DTOTR1') = 'CMOS:LI20:3505';
             dict('DTOTR2') = 'CAMR:LI20:107';
